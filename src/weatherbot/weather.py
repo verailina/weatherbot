@@ -3,7 +3,7 @@ import datetime
 import pytz
 import requests
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, NamedTuple
 
 
 def get_weather_key() -> str:
@@ -42,3 +42,27 @@ def get_weather_forecast() -> Dict:
 
     return request.json()
 
+
+class WeatherPoint(NamedTuple):
+    date: datetime.datetime
+    temperature: float
+
+    @staticmethod
+    def from_values(date: str, values: Dict) -> "WeatherPoint":
+        date = datetime.datetime.fromisoformat(date)
+        return WeatherPoint(
+            date=date,
+            temperature=values["temperature"])
+
+
+def parse_weather_forecast(forecast: Dict) -> List[WeatherPoint]:
+    timelines = forecast["data"]["timelines"]
+    if len(timelines) == 0:
+        return []
+    intervals = timelines[0]["intervals"]
+    return [WeatherPoint.from_values(interval["startTime"], interval["values"])
+            for interval in intervals]
+
+
+forecast = get_weather_forecast()
+print(parse_weather_forecast(forecast))

@@ -1,12 +1,13 @@
 import logging
-import datetime
-import requests
+import math
 from pathlib import Path
 
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import Updater, CommandHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import InlineQueryHandler
+
+from weatherbot.weather import get_weather_forecast, parse_weather_forecast
 
 
 def get_token() -> str:
@@ -15,46 +16,6 @@ def get_token() -> str:
 
     return token
 
-
-def get_weather_key() -> str:
-    with Path("weatherkey.txt").open() as weather_key_file:
-        weather_key = weather_key_file.readline()
-    return weather_key
-
-
-get_timeline_url = "https://api.tomorrow.io/v4/timelines"
-weather_key = get_weather_key()
-location = [48.882272, 2.274652]
-fields = [
-  "precipitationIntensity",
-  "precipitationType",
-  "windSpeed",
-  "windGust",
-  "windDirection",
-  "temperature",
-  "temperatureApparent",
-  "cloudCover",
-  "cloudBase",
-  "cloudCeiling",
-  "weatherCode",
-]
-units = "metric"
-timesteps = ["current", "1d"]
-now = datetime.datetime.now()
-now.replace(second=0)
-end = now + datetime.timedelta(days=7)
-time_zone = "Europe/Paris"
-params = {"apikey": weather_key,
-          "location": location,
-          "units": units,
-          "fields": fields,
-          "timesteps": timesteps,
-          "timezone": time_zone,
-          "startTime": now.isoformat(),
-          "endTime": end.isoformat(),
-          }
-
-request = requests.get(url=get_timeline_url, params=params)
 
 updater = Updater(token=get_token(), use_context=True)
 
@@ -76,6 +37,22 @@ dispatcher.add_handler(echo_handler)
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="I'm a bot, please talk to me!")
+
+
+def show_weather(update, context):
+    forecast = get_weather_forecast()
+    weather_points = parse_weather_forecast(forecast)
+
+    def get_row(point) -> str:
+        date_row = point.date.strftime("%d %b   %H:%M")
+        temperature = int(point.temperature)
+        if (point.temperature - temperature) > 0.5:
+            temperature = math.ceil(point.temperature)
+
+        return f"{date_row}   {point.temperature} {temperature}"
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="\n".join([get_row(x) for x in weather_points]))
 
 
 # def inline_caps(update, context):
@@ -101,6 +78,9 @@ def start(update, context):
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
+
+weather_handler = CommandHandler('weather', show_weather)
+dispatcher.add_handler(weather_handler)
 
 #
 # def caps(update, context):
