@@ -1,6 +1,7 @@
 import logging
 import math
 from pathlib import Path
+from typing import Tuple
 
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import Updater, CommandHandler
@@ -8,7 +9,7 @@ from telegram.ext import MessageHandler, Filters
 from telegram.ext import InlineQueryHandler
 
 from weatherbot.weather import get_weather_forecast, parse_weather_forecast
-
+from weatherbot.visualization import get_weather_image
 
 def get_token() -> str:
     with Path("bottoken.txt").open() as token_file:
@@ -43,16 +44,21 @@ def show_weather(update, context):
     forecast = get_weather_forecast()
     weather_points = parse_weather_forecast(forecast)
 
-    def get_row(point) -> str:
-        date_row = point.date.strftime("%d %b   %H:%M")
+    def get_data(point) -> Tuple[str, str, str]:
+        date_row = point.date.strftime("%H:%M")
         temperature = int(point.temperature)
         if (point.temperature - temperature) > 0.5:
             temperature = math.ceil(point.temperature)
+        return date_row, point.temperature, str(temperature)
 
-        return f"{date_row}   {point.temperature} {temperature}"
-    context.bot.send_message(
+    data = [get_data(x) for x in weather_points]
+    print(*list(zip(*data)))
+    print(weather_points)
+    weather_image = get_weather_image(weather_points)
+
+    context.bot.send_photo(
         chat_id=update.effective_chat.id,
-        text="\n".join([get_row(x) for x in weather_points]))
+        photo=weather_image)
 
 
 # def inline_caps(update, context):

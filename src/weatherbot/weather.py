@@ -40,7 +40,91 @@ def get_weather_forecast() -> Dict:
                 "endTime": end.isoformat(),
                 })
 
-    return request.json()
+    result = request.json()
+    if "data" not in result:
+        result = get_weather_forecast_dummy()
+    return result
+
+
+def get_weather_forecast_dummy():
+    return {'data': {'timelines': [
+    {'timestep': '1h', 'startTime': '2022-01-12T22:00:00+01:00',
+     'endTime': '2022-01-13T22:00:00+01:00', 'intervals': [
+        {'startTime': '2022-01-12T22:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 3.08}},
+        {'startTime': '2022-01-12T23:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 3}},
+        {'startTime': '2022-01-13T00:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.96}},
+        {'startTime': '2022-01-13T01:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.86}},
+        {'startTime': '2022-01-13T02:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.61}},
+        {'startTime': '2022-01-13T03:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.34}},
+        {'startTime': '2022-01-13T04:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.22}},
+        {'startTime': '2022-01-13T05:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.19}},
+        {'startTime': '2022-01-13T06:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 1.99}},
+        {'startTime': '2022-01-13T07:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 1.68}},
+        {'startTime': '2022-01-13T08:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 1.24}},
+        {'startTime': '2022-01-13T09:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 0.86}},
+        {'startTime': '2022-01-13T10:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 0.97}},
+        {'startTime': '2022-01-13T11:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 1.72}},
+        {'startTime': '2022-01-13T12:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.56}},
+        {'startTime': '2022-01-13T13:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 3.65}},
+        {'startTime': '2022-01-13T14:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 4.69}},
+        {'startTime': '2022-01-13T15:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 5.42}},
+        {'startTime': '2022-01-13T16:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 5.58}},
+        {'startTime': '2022-01-13T17:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 5.01}},
+        {'startTime': '2022-01-13T18:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 4.13}},
+        {'startTime': '2022-01-13T19:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 3.63}},
+        {'startTime': '2022-01-13T20:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 3.21}},
+        {'startTime': '2022-01-13T21:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.59}},
+        {'startTime': '2022-01-13T22:00:00+01:00',
+         'values': {'precipitationIntensity': 0, 'precipitationType': 0,
+                    'temperature': 2.32}}]}]}}
 
 
 class WeatherPoint(NamedTuple):
@@ -64,5 +148,5 @@ def parse_weather_forecast(forecast: Dict) -> List[WeatherPoint]:
             for interval in intervals]
 
 
-forecast = get_weather_forecast()
-print(parse_weather_forecast(forecast))
+# forecast = get_weather_forecast()
+# print(parse_weather_forecast(forecast))
