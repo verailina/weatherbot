@@ -62,7 +62,7 @@ def show_weather(update, context):
 
     context.bot.send_photo(
         chat_id=update.effective_chat.id,
-        photo=Path("weather.jpg").open("wb"))
+        photo=Path("weather.jpg").open("rb"))
 
 
 start_handler = CommandHandler('start', start)
