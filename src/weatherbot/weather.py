@@ -1,4 +1,5 @@
 import logging
+import os
 import datetime
 import pytz
 import requests
@@ -7,8 +8,10 @@ from typing import Dict, List, NamedTuple
 
 
 def get_weather_key() -> str:
-    with Path("weatherkey.txt").open() as weather_key_file:
-        weather_key = weather_key_file.readline()
+    weather_key = os.environ.get("WEATHER_KEY")
+    if weather_key is None:
+        with Path("weatherkey.txt").open() as weather_key_file:
+            weather_key = weather_key_file.readline()
     return weather_key
 
 
